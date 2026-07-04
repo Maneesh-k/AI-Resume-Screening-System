@@ -4,10 +4,10 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Annotated
 
+import bcrypt
 import structlog
 from fastapi import APIRouter, Depends, HTTPException, status
 from jose import jwt
-from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.config import get_settings
@@ -25,7 +25,14 @@ from src.presentation.schemas.auth import (
 router = APIRouter()
 log = structlog.get_logger()
 settings = get_settings()
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def _hash_password(plain: str) -> str:
+    return bcrypt.hashpw(plain.encode(), bcrypt.gensalt()).decode()
+
+
+def _verify_password(plain: str, hashed: str) -> bool:
+    return bcrypt.checkpw(plain.encode(), hashed.encode())
 
 DbSession = Annotated[AsyncSession, Depends(get_db)]
 
@@ -49,7 +56,7 @@ async def register(body: RegisterRequest, db: DbSession) -> AuthResponse:
         email=body.email,
         name=body.name,
         role=UserRole(body.role),
-        hashed_password=pwd_context.hash(body.password),
+        hashed_password=_hash_password(body.password),
     )
     created = await repo.create(user)
 
@@ -74,7 +81,7 @@ async def login(body: LoginRequest, db: DbSession) -> AuthResponse:
     repo = UserRepositoryImpl(db)
     user = await repo.get_by_email(body.email)
 
-    if not user or not pwd_context.verify(body.password, user.hashed_password):
+    if not user or not _verify_password(body.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
     if not user.is_active:

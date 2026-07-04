@@ -350,18 +350,23 @@ pnpm install
 pnpm dev                  # Starts on :3000
 ```
 
-### 5. Create First Admin User
+### 5. Seed Demo Users
+
+Run the seed script to create demo accounts:
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "admin@company.com",
-    "password": "securepassword",
-    "name": "Admin User",
-    "role": "admin"
-  }'
+cd apps/api
+source .venv/bin/activate
+python scripts/seed.py
 ```
+
+| Role | Email | Password |
+|---|---|---|
+| **Admin** | `admin@hiringcopilot.ai` | `Admin@1234` |
+| **Recruiter** | `recruiter@hiringcopilot.ai` | `Recruit@1234` |
+| **Hiring Manager** | `hiring@hiringcopilot.ai` | `Hiring@1234` |
+
+> **Tip:** Use the Admin account for full access — create jobs, manage users, and view all candidates.
 
 ---
 

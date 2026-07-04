@@ -160,7 +160,7 @@ async def update_job(
     return _job_to_response(updated)
 
 
-@router.delete("/{job_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{job_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
 async def delete_job(job_id: uuid.UUID, current_user: CurrentUser, db: DbSession) -> None:
     repo = JobRepositoryImpl(db)
     job = await repo.get_by_id(job_id)

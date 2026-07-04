@@ -60,7 +60,7 @@ async def get_candidate(
     )
 
 
-@router.delete("/{candidate_id}", status_code=204)
+@router.delete("/{candidate_id}", status_code=204, response_model=None)
 async def delete_candidate(
     candidate_id: uuid.UUID, current_user: CurrentUser, db: DbSession
 ) -> None:
