@@ -1,0 +1,95 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "ai-hiring-copilot-api"
+version = "1.0.0"
+description = "AI Hiring Copilot — FastAPI Backend"
+requires-python = ">=3.12"
+dependencies = [
+    # Web framework
+    "fastapi==0.115.5",
+    "uvicorn[standard]==0.32.1",
+    "python-multipart==0.0.12",
+    # Validation
+    "pydantic==2.10.3",
+    "pydantic-settings==2.6.1",
+    "email-validator==2.2.0",
+    # Database
+    "sqlalchemy[asyncio]==2.0.36",
+    "asyncpg==0.30.0",
+    "alembic==1.14.0",
+    # Cache
+    "redis[asyncio]==5.2.1",
+    # AI
+    "openai==1.57.4",
+    "anthropic==0.40.0",
+    "tiktoken==0.8.0",
+    # Vector DB
+    "pinecone==5.4.2",
+    # File parsing
+    "pymupdf==1.25.1",
+    "python-docx==1.1.2",
+    "pytesseract==0.3.13",
+    "Pillow==11.0.0",
+    # AWS
+    "boto3==1.35.85",
+    "aiobotocore==2.15.2",
+    # Auth
+    "python-jose[cryptography]==3.3.0",
+    "passlib[bcrypt]==1.7.4",
+    # HTTP client
+    "httpx==0.28.1",
+    # Retry
+    "tenacity==9.0.0",
+    # Logging
+    "structlog==24.4.0",
+    # Dependency injection
+    "dependency-injector==4.43.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.4",
+    "pytest-asyncio==0.24.0",
+    "pytest-cov==6.0.0",
+    "httpx==0.28.1",
+    "factory-boy==3.3.1",
+    "faker==33.1.0",
+    "ruff==0.8.4",
+    "mypy==1.13.0",
+    "types-passlib==1.7.7",
+    "types-python-jose==3.3.4",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "S", "B", "A", "C4", "PTH", "RUF"]
+ignore = ["S101", "S104", "B008", "RUF012"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S", "ARG"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+exclude = ["alembic/"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["src/main.py", "alembic/*"]
